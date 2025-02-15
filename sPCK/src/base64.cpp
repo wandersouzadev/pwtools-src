@@ -176,24 +176,21 @@ wxString Base64::Encode(wxString in, wxCSConv encoding)
     Decode a base64 wxString (utf8 representation)
     to a wxString (given encoding)
 */
-wxString Base64::Decode(wxString in, wxCSConv encoding)
-{
-    wxByte* cb = (wxByte*)in.utf8_str().release();
-    wxByte* buffer = new wxByte[byteLength(cb)*3/4+1]; // length + 1 for '\0' terminator char
+wxString Base64::Decode(wxString in, wxCSConv encoding) {
+    wxCharBuffer cb = in.utf8_str();
+    wxByte* buffer = new wxByte[byteLength((wxByte*)cb.data())*3/4+1]; // length + 1 for '\0' terminator char
     wxByte* triple = new wxByte[3];
     wxByte* quadruple = new wxByte[4];
     wxUint32 length;
 
     wxUint32 n = 0;
-    for(wxUint32 i=0; i<byteLength(cb); i+=4)
-    {
+    for(wxUint32 i=0; i<byteLength((wxByte*)cb.data()); i+=4) {
         quadruple[0] = base64char(cb[i]);
         quadruple[1] = base64char(cb[i+1]);
         quadruple[2] = base64char(cb[i+2]);
         quadruple[3] = base64char(cb[i+3]);
 
         length = base64chars(quadruple, triple);
-
         if(length>0)
         {
             buffer[n] = triple[0];
@@ -215,7 +212,10 @@ wxString Base64::Decode(wxString in, wxCSConv encoding)
 
     wxDELETEA(triple);
     wxDELETEA(quadruple);
-    wxDELETEA(cb);
+    wxString result = wxString((char*)buffer, encoding);
+    wxDELETEA(buffer);
 
-    return wxString((char*)buffer, encoding);
+    wxPrintf(wxT("Decoded string: ") + result + wxT("\n"));
+
+    return result;
 }

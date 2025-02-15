@@ -783,7 +783,7 @@ void decode(wxString directory)
 
     // reading the file list from all v-*.inc files
     wxArrayString v_incs;
-    wxDir::GetAllFiles(directory, &v_incs, wxT("*.inc"), wxDIR_DEFAULT);
+    wxDir::GetAllFiles(directory, &v_incs, wxT("inc"), wxDIR_DEFAULT);
 
     wxString line;
     wxString chDir = wxFileName::GetPathSeparator();
@@ -825,7 +825,7 @@ void decode(wxString directory)
 
                 /*
                     all previous extracted filenames are usually lowercase (lowercase stored in table entries)
-                    filenames in v-*.inc contains the genuine base64 filename, containing upper and lower characters
+                    filenames in v-inc contains the genuine base64 filename, containing upper and lower characters
                     windows does not distinguish between upper/lower filenames, but linux does
                     -> we need to lower the filename where required
                 */
@@ -925,13 +925,9 @@ bool pckApp::OnInit()
         exit(1);
     }
 
-    // Convert first parameter argv[1] from char* to wxString
-    wxString gamemode(argv[1], wxConvUTF8);
-    // Convert second parameter argv[2] from char* to wxString
-    wxString instruction(argv[2], wxConvUTF8);
-    // Convert third parameter argv[3] from char* to wxString
-    wxString path(argv[3], wxConvUTF8);
-    // Convert fourth parameter argv[4] from char* to int
+    wxString gamemode = wxString::FromUTF8(argv[1]);
+    wxString instruction = wxString::FromUTF8(argv[2]);
+    wxString path = wxString::FromUTF8(argv[3]);
     if(argc > 4)
     {
         COMPRESSION_LEVEL = wxAtoi(argv[4]);
